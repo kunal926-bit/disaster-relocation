@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GeoSentinel | Disaster Relocation Intelligence</title>
+
+  <!-- Leaflet map library -->
+  <link rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        crossorigin="">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  
+  <div class="app-shell">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">G</div>
+        <div>
+          <h1>GeoSentinel</h1>
+          <span>Disaster Intelligence</span>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item active" data-view="dashboard">⌂ <span>Dashboard</span></button>
+        <button class="nav-item" data-view="hazard">◉ <span>Hazard Map</span></button>
+        <button class="nav-item" data-view="vulnerability">♙ <span>Vulnerability</span></button>
+        <button class="nav-item" data-view="relocation">⇄ <span>Relocation</span></button>
+        <button class="nav-item" data-view="shelters">⌂ <span>Shelters</span></button>
+        <button class="nav-item" data-view="simulation">⚡ <span>Simulation</span></button>
+        <button class="nav-item" data-view="reports">▤ <span>Reports</span></button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="system-status">
+          <span class="status-dot"></span>
+          Prototype Online
+        </div>
+        <small>SIH 2026 • SHI26191</small>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">SMART INDIA HACKATHON 2026</p>
+          <h2 id="pageTitle">Disaster Relocation Command Center</h2>
+        </div>
+        <div class="top-actions">
+          <button class="icon-btn" id="alertBtn">⚠ <span id="alertCount">3</span></button>
+          <div class="user-chip">
+            <div class="avatar">GS</div>
+            <div>
+              <strong>GeoSentinel Team</strong>
+              <small>Emergency Operator</small>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- DASHBOARD -->
+      <section id="dashboard" class="view active-view">
+        <div class="hero-row">
+          <div>
+            <h3>Live Situation Overview</h3>
+            <p class="muted">Predictive hazard assessment and continuously updated relocation planning.</p>
+          </div>
+          <button class="primary-btn" id="simulateBtn">⚡ Run What‑If Simulation</button>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-icon red">!</div>
+            <div><span>Risk Index</span><strong id="riskIndex">0.76</strong><small id="riskLabel">High</small></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange">⌂</div>
+            <div><span>Households at Risk</span><strong id="households">245</strong><small>+18% vs baseline</small></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon blue">♙</div>
+            <div><span>Critical Households</span><strong id="critical">61</strong><small>Priority P1</small></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">⌂</div>
+            <div><span>Shelter Capacity</span><strong id="capacity">120</strong><small>available beds</small></div>
+          </div>
+        </div>
+
+        <div class="content-grid">
+          <div class="panel map-panel">
+            <div class="panel-head">
+              <div>
+                <h3>Dynamic Hazard & Relocation Map</h3>
+                <p class="muted">Risk zones, shelters, households and recommended route.</p>
+              </div>
+              <div class="legend">
+                <span><i class="dot safe"></i> Safe</span>
+                <span><i class="dot warn"></i> Warning</span>
+                <span><i class="dot danger"></i> Critical</span>
+              </div>
+            </div>
+            <div id="map"></div>
+          </div>
+
+          <div class="side-column">
+            <div class="panel">
+              <div class="panel-head"><h3>Priority Queue</h3><span class="badge danger-badge">LIVE</span></div>
+              <div id="priorityList" class="priority-list"></div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head"><h3>System Decision</h3></div>
+              <div class="decision-box">
+                <div class="decision-icon">✓</div>
+                <div>
+                  <strong>Evacuation recommended</strong>
+                  <p id="decisionText">61 critical households should move toward Shelter B using the low-risk route.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-grid">
+          <div class="panel">
+            <div class="panel-head"><h3>Rainfall Trend</h3><span class="small-pill">Last 10 periods</span></div>
+            <div class="bar-chart" id="rainChart"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h3>Risk Trend</h3><span class="small-pill">AI score</span></div>
+            <div class="line-chart">
+              <svg viewBox="0 0 520 150" preserveAspectRatio="none">
+                <polyline id="riskLine"
+                  points="0,115 52,108 104,112 156,96 208,101 260,78 312,83 364,57 416,64 468,35 520,43"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- HAZARD -->
+      <section id="hazard" class="view">
+        <div class="page-card">
+          <h3>Multi-Hazard Risk Engine</h3>
+          <p class="muted">The prototype combines rainfall, river level, elevation and historical exposure into a dynamic risk score.</p>
+          <div class="hazard-grid">
+            <div class="hazard-card flood"><span>Flood</span><strong id="floodRisk">87%</strong><small>High</small></div>
+            <div class="hazard-card slide"><span>Landslide</span><strong id="landslideRisk">62%</strong><small>Moderate</small></div>
+            <div class="hazard-card road"><span>Road Failure</span><strong id="roadRisk">41%</strong><small>Moderate</small></div>
+          </div>
+          <div class="info-strip">
+            <strong>Hazard chain:</strong>
+            Heavy Rain → River Rise → Flood Spread → Road Blockage → Household Isolation
+          </div>
+        </div>
+      </section>
+
+      <!-- VULNERABILITY -->
+      <section id="vulnerability" class="view">
+        <div class="page-card">
+          <h3>Household Vulnerability</h3>
+          <p class="muted">Priority is calculated using hazard exposure, vulnerable persons, house condition and evacuation difficulty.</p>
+          <table>
+            <thead><tr><th>Household</th><th>Risk</th><th>Vulnerability</th><th>Time-to-Danger</th><th>Priority</th></tr></thead>
+            <tbody id="vulnerabilityTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- RELOCATION -->
+      <section id="relocation" class="view">
+        <div class="page-card">
+          <h3>AI Relocation Planner</h3>
+          <p class="muted">A combined decision layer selects a destination and safer route rather than simply choosing the nearest shelter.</p>
+          <div class="relocation-card">
+            <div><span>Household</span><strong>H001</strong></div>
+            <div><span>Priority</span><strong class="danger-text">P1</strong></div>
+            <div><span>Destination</span><strong>Shelter B</strong></div>
+            <div><span>Route</span><strong>Route B • Low Risk</strong></div>
+            <div><span>ETA</span><strong>17 min</strong></div>
+          </div>
+          <div class="route-compare">
+            <div class="route bad"><strong>Route A</strong><span>4.2 km • 12 min</span><b>HIGH RISK ✕</b></div>
+            <div class="route good"><strong>Route B</strong><span>5.1 km • 17 min</span><b>LOW RISK ✓</b></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SHELTERS -->
+      <section id="shelters" class="view">
+        <div class="page-card">
+          <h3>Shelter Capacity & Assignment</h3>
+          <p class="muted">Shelter selection considers capacity, hazard exposure, facilities and route safety.</p>
+          <div class="shelter-grid" id="shelterGrid"></div>
+        </div>
+      </section>
+
+      <!-- SIMULATION -->
+      <section id="simulation" class="view">
+        <div class="page-card simulation-page">
+          <h3>Disaster What‑If Laboratory</h3>
+          <p class="muted">Change conditions and observe how the relocation plan is recomputed.</p>
+
+          <div class="slider-wrap">
+            <div class="slider-head"><label>Rainfall increase</label><strong id="rainValue">30%</strong></div>
+            <input id="rainSlider" type="range" min="0" max="100" value="30">
+          </div>
+
+          <div class="slider-wrap">
+            <div class="slider-head"><label>River level stress</label><strong id="riverValue">55%</strong></div>
+            <input id="riverSlider" type="range" min="0" max="100" value="55">
+          </div>
+
+          <button class="primary-btn wide" id="runSimulation">Run Simulation</button>
+
+          <div class="simulation-results">
+            <div><span>Households at Risk</span><strong id="simHouseholds">245</strong></div>
+            <div><span>Critical Households</span><strong id="simCritical">61</strong></div>
+            <div><span>Shelters Required</span><strong id="simShelters">4</strong></div>
+            <div><span>Blocked Roads</span><strong id="simRoads">3</strong></div>
+            <div><span>Avg. Evacuation Time</span><strong id="simEta">27 min</strong></div>
+          </div>
+
+          <div class="simulation-log" id="simulationLog">
+            <strong>Simulation ready.</strong> Adjust the sliders and run the scenario.
+          </div>
+        </div>
+      </section>
+
+      <!-- REPORTS -->
+      <section id="reports" class="view">
+        <div class="page-card">
+          <h3>Operational Report</h3>
+          <p class="muted">A demo-ready summary that can be shown to judges during the presentation.</p>
+          <div class="report">
+            <h4>GeoSentinel Relocation Recommendation</h4>
+            <p><b>Current status:</b> HIGH RISK</p>
+            <p><b>Priority households:</b> <span id="reportCritical">61</span></p>
+            <p><b>Recommended action:</b> Evacuate P1 households first and dynamically assign available shelter capacity.</p>
+            <p><b>Route strategy:</b> Prefer lower hazard exposure over minimum distance.</p>
+            <p><b>Simulation:</b> Plan updates automatically when rainfall/river conditions change.</p>
+            <button class="secondary-btn" onclick="window.print()">Print / Save Report</button>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <span>GeoSentinel • SIH 2026</span>
+        <span>Prototype demonstration • Data shown for demonstration</span>
+      </footer>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="script.js"></script>
+</body>
+</html>
