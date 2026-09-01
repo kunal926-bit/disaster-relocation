@@ -7,7 +7,7 @@
 body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
 button,input{font:inherit}
 .app-shell{display:flex;min-height:100vh}
-.sidebar{width:245px;background:linear-gradient(180deg,#102d52,#0a2340);color:white;padding:24px 16px;display:flex;flex-direction:column;position:fixed;inset:0 auto 0 0}
+.sidebar{width:245px;background:linear-gradient(180deg,#6f0d0d,#06476f);color:white;padding:24px 16px;display:flex;flex-direction:column;position:fixed;inset:0 auto 0 0}
 .brand{display:flex;gap:12px;align-items:center;padding:4px 8px 28px}
 .brand-mark{width:42px;height:42px;border-radius:12px;background:#fff;color:var(--blue2);display:grid;place-items:center;font-size:24px;font-weight:900}
 .brand h1{font-size:20px;margin:0}.brand span{font-size:11px;color:#b8c9dc}
